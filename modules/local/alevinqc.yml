@@ -1,0 +1,24 @@
+name: alevinQC
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - pandoc
+  - ghostscript
+  - r>=4.5
+  - r-base
+  - r-biocmanager
+  - r-essentials
+  - r-languageserver
+  - r-recommended
+  - r-patchwork
+  - r-ggstats
+  - r-crosstalk
+  - r-ggally
+  - r-rjson
+  - r-shinydashboard
+  - r-dt
+  - r-cowplot
+  - r-ggplot2
+  - r-httpgd
+  - r-pracma

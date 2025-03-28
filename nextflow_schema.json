@@ -84,6 +84,10 @@
                     "type": "boolean",
                     "description": "Skip MultiQC Report"
                 },
+                "skip_cutadapt": {
+                    "type": "boolean",
+                    "description": "Skip Cutadapt"
+                },
                 "skip_fastqc": {
                     "type": "boolean",
                     "description": "Skip FastQC"
@@ -91,11 +95,6 @@
                 "skip_cellbender": {
                     "type": "boolean",
                     "description": "Skip cellbender empty drops filter subworkflow"
-                },
-                "skip_emptydrops": {
-                    "type": "boolean",
-                    "deprecated": true,
-                    "errorMessage": "Parameter has been deprecated in favour of --skip_cellbender to properly match name of workflow."
                 }
             }
         },
@@ -151,7 +150,8 @@
                 "save_align_intermeds": {
                     "type": "boolean",
                     "description": "Specify this parameter to save the intermediate alignment files (STAR, CellRanger) to the results.",
-                    "fa_icon": "fas fa-bookmark"
+                    "fa_icon": "fas fa-bookmark",
+                    "default": true
                 },
                 "igenomes_base": {
                     "type": "string",
@@ -169,6 +169,51 @@
                     "exists": true
                 }
             }
+        },
+        "trimming_options": {
+            "title": "Trimming options",
+            "type": "object",
+            "description": "Options related to read trimming with Cutadapt",
+            "default": "",
+            "properties": {
+                "adapters_3p_fasta": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-code",
+                    "description": "Fasta file with adapter sequences to be trimmed from 3' end",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "format": "file-path",
+                    "mimetype": "text/plain"
+                },
+                "adapters_5p_fasta": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-code",
+                    "description": "Fasta file with adapter sequences to be trimmed from 5' end",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "format": "file-path",
+                    "mimetype": "text/plain"
+                },
+                "barcode_umi_lenght": {
+                    "type": "integer",
+                    "fa_icon": "fas fa-hashtag",
+                    "description": "Number of bases in cell barcode + umi",
+                    "minimum": 0
+                },
+                "quality_cutoff": {
+                    "type": "integer",
+                    "default": 20,
+                    "fa_icon": "fas fa-hashtag",
+                    "description": "Minimum single-base quality threshold",
+                    "minimum": 0,
+                    "maximum": 40
+                },
+                "save_trimmed": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-bookmark",
+                    "description": "Specify this parameter to save reads trimmed by Cutadapt"
+                }
+            },
+            "fa_icon": "fas fa-cut",
+            "required": ["barcode_umi_lenght"]
         },
         "simpleaf_options": {
             "title": "Simpleaf Options",
@@ -529,6 +574,9 @@
         },
         {
             "$ref": "#/$defs/reference_genome_options"
+        },
+        {
+            "$ref": "#/$defs/trimming_options"
         },
         {
             "$ref": "#/$defs/simpleaf_options"

@@ -7,10 +7,10 @@ process ALEVINQC {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::bioconductor-alevinqc=1.18.0"
+    // conda "${moduleDir}/alevinqc.yml" does not work, R 4.5 is not available on conda-forge
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bioconductor-alevinqc:1.18.0--r43hf17093f_0' :
-        'biocontainers/bioconductor-alevinqc:1.18.0--r43hf17093f_0' }"
+        '/home/mmicik/apps/apptainer/local-alevinQC-1.23.1.sif' :
+        '/home/mmicik/apps/apptainer/local-alevinQC-1.23.1.sif' }"
 
     // all metas are the same
     input:
