@@ -192,7 +192,7 @@
                     "format": "file-path",
                     "mimetype": "text/plain"
                 },
-                "barcode_umi_lenght": {
+                "barcode_umi_length": {
                     "type": "integer",
                     "fa_icon": "fas fa-hashtag",
                     "description": "Number of bases in cell barcode + umi",
@@ -213,7 +213,7 @@
                 }
             },
             "fa_icon": "fas fa-cut",
-            "required": ["barcode_umi_lenght"]
+            "required": ["barcode_umi_length"]
         },
         "simpleaf_options": {
             "title": "Simpleaf Options",
