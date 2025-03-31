@@ -5,6 +5,7 @@ import os
 
 os.environ["NUMBA_CACHE_DIR"] = "."
 
+import numpy as np
 import scanpy as sc
 import pandas as pd
 import argparse
@@ -29,6 +30,27 @@ def format_yaml_like(data: dict, indent: int = 0) -> str:
         else:
             yaml_str += f"{spaces}{key}: {value}\\n"
     return yaml_str
+
+def jsons_to_dict(dictionary: dict) -> dict:
+    """
+    Recursively converts JSON strings within a dictionary to Python dictionaries.
+    Args:
+        dictionary (dict): The input dictionary potentially containing JSON strings.
+    Returns:
+        dict: A new dictionary with JSON strings converted to Python dictionaries.
+    """
+    res = {}
+    for k, v in dictionary.items():
+        if isinstance(v, str):
+            try:
+                v = json.loads(v)
+            except json.JSONDecodeError:
+                pass
+        if isinstance(v, dict):
+            res[k] = jsons_to_dict(v)
+        else:
+            res[k] = v
+    return res
 
 def dump_versions():
     versions = {
@@ -55,6 +77,19 @@ def input_to_adata(
 
     # the simpleaf quant module exports an h5ad file.
     adata = sc.read_h5ad(simpleaf_h5ad_path)
+    
+    # if using USA mode, move the unspliced and ambiguously spliced genes to the end
+    uns = jsons_to_dict(adata.uns)
+    if uns["quant_info"]["usa_mode"]:
+        keys = ["spliced", "unspliced", "ambiguous"]
+        X = scipy.sparse.hstack([adata.layers[k] for k in keys]).tocsr()
+        for k in keys:
+            adata.varm[k]["gene_type"] = k
+            adata.varm[k]["gene_symbol"] = adata.var["gene_symbol"].values
+        var = pd.concat([adata.varm[k] for k in keys])
+        adata = ad.Anndata(X, obs=adata.obs, var=var, uns=uns)
+
+    
     adata.obs_names = adata.obs['barcodes'].values
     adata.var_names = adata.var['gene_id'].values
     adata.obs["sample"] = sample
